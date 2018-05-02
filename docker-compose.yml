@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+  domhauton-site:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: domhauton/site
+    ports:
+      - "5000:80"

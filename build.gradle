@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+project.ext {
+    log4jVersion = "2.11.0"
+    guavaVersion = "25.0-jre"
+    jodaTimeVersion = "2.9.9"
+    commonsCliVersion = "1.4"
+
+    junitPlatformVersion = "1.2.0"
+    junitJupiterVersion = "5.2.0"
+    mockitoVersion = "2.18.3"
+    jacksonVersion = "2.9.5"
+    // lombokVersion = "1.16.21"
+}
+
+group 'com.domhauton.site'
+
+sourceCompatibility = 1.10
+
+
+
+compileTestJava {
+    sourceCompatibility = 1.10
+    targetCompatibility = 1.10
+    options.compilerArgs += '-parameters'
+}
+
+test {
+    useJUnitPlatform {
+        includeEngines 'junit-jupiter'
+//        excludeTags 'dockerbuildskip' // DOCKER-BUILD-ONLY
+    }
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: log4jVersion
+    // https://mvnrepository.com/artifact/com.google.guava/guava
+    compile group: 'com.google.guava', name: 'guava', version: guavaVersion
+    // https://mvnrepository.com/artifact/joda-time/joda-time
+    compile group: 'joda-time', name: 'joda-time', version: jodaTimeVersion
+    // https://mvnrepository.com/artifact/commons-cli/commons-cli
+    compile group: 'commons-cli', name: 'commons-cli', version: commonsCliVersion
+
+
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.dataformat/jackson-dataformat-yaml
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: jacksonVersion
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-core', version: jacksonVersion
+    // https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: jacksonVersion
+
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    // compileOnly group: 'org.projectlombok', name: 'lombok', version: lombokVersion
+}
+
+dependencies {
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: junitJupiterVersion
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine
+    testRuntimeOnly group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: junitJupiterVersion
+    // https://mvnrepository.com/artifact/org.mockito/mockito-core
+    testCompile group: 'org.mockito', name: 'mockito-core', version: mockitoVersion
+}
+
+// Copy all libs to build directory for docker image generation
+
+task copyToLib(type: Copy) {
+    into "$buildDir/output/libs"
+    from configurations.runtime
+}
+
+build.dependsOn(copyToLib)
